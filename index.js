@@ -84,8 +84,17 @@ app.get('/', isLoggedIn, (req, res) => {
     res.render("index", { title: "Home" });
 });
 
+app.get('/about', isLoggedIn, (req, res) => {
+    res.render("index", { title: "About" });
+});
+
 app.get('/login', isLoggedOut, (req, res) => {
-    res.render('login', { title: "Login"});
+    const response = {
+        title: "Login",
+        error: req.query.error
+    }
+
+    res.render('login', response);
 });
 
 app.post('/login', passport.authenticate('local', {
@@ -93,8 +102,13 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect: '/login?error=true'
 }));
 
+app.get('/logout', function (req, res) {
+    req.logout();
+    res.redirect('/');
+});
+
 app.get('/setup', async (req, res) => {
-    const exists = await User.exists({ username: "admin" });
+    const exists = await User.exists({ username: "rocky" });
 
     if (exists) {
         res.redirect('/login');
@@ -107,7 +121,7 @@ app.get('/setup', async (req, res) => {
             if (err) return next(err);
 
             const newAdmin = new User({
-                username: "admin",
+                username: "rocky",
                 password: hash
             });
 
